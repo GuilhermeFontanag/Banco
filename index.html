@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FinData Architecture - Documentação técnica, modelagem relacional, validação 1FN a 4FN e consultas analíticas SQL para Gestão de Ativos Financeiros em MySQL 8.0.">
+  <meta name="keywords" content="FinData, SQL, MySQL, Modelagem Relacional, Engenharia de Dados, Normalização 1FN 4FN, Gestão de Ativos, Benchmark Selic, Carteiras de Investimento">
+  <meta name="author" content="FinData Architecture Engineering Team">
+  <title>FinData Architecture | Documentação Técnica de Banco de Dados</title>
+
+  <!-- Google Fonts: Geist & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Skip Link para Acessibilidade WCAG -->
+  <a href="#conteudo-principal" class="skip-link">Saltar para o conteúdo principal</a>
+
+  <!-- Cabeçalho Principal -->
+  <header class="site-header" id="site-header">
+    <div class="header-container">
+      <a href="#hero" class="brand-logo" aria-label="FinData.sql - Página Inicial">
+        <div class="logo-icon-box" aria-hidden="true">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+        </div>
+        <span class="logo-text">FinData<span class="logo-extension">.sql</span></span>
+      </a>
+
+      <!-- Botão Hambúrguer Mobile -->
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="main-navigation" aria-label="Abrir menu de navegação">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+
+      <!-- Navegação Principal -->
+      <nav class="main-navigation" id="main-navigation" aria-label="Menu Principal">
+        <ul class="nav-links">
+          <li><a href="#contexto" class="nav-link">Visão Geral</a></li>
+          <li><a href="#arquitetura" class="nav-link">Arquitetura</a></li>
+          <li><a href="#normalizacao" class="nav-link">Normalização</a></li>
+          <li><a href="#queries" class="nav-link">Queries SQL</a></li>
+          <li><a href="#documentacao" class="nav-link">Documentação</a></li>
+        </ul>
+        <div class="header-cta-wrapper">
+          <a href="#ddl-modal" class="btn btn-primary btn-sm" id="btn-view-ddl" role="button">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+            <span>Ver DDL no GitHub</span>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo-principal">
+    <!-- Seção Principal (Hero) -->
+    <section class="hero" id="hero">
+      <div class="hero-background-effects" aria-hidden="true">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="cyber-grid-overlay"></div>
+      </div>
+
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="tech-badge">
+            <span class="badge-dot" aria-hidden="true"></span>
+            <span class="badge-text">MySQL 8.0 LTS &bull; Enterprise ACID Standard</span>
+          </div>
+
+          <h1 class="hero-title">
+            Engenharia & Modelagem de Dados para <span class="text-gradient">Gestão de Ativos Financeiros</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Base de dados MySQL estruturada sob rígidas regras de integridade referencial, normalizada até à 4ª Forma Normal e pronta para análise de investimentos.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#arquitetura" class="btn btn-primary">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+              <span>Explorar Schema</span>
+            </a>
+            <a href="#queries" class="btn btn-secondary">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+              <span>Ver 15 Queries SQL</span>
+            </a>
+          </div>
+
+          <!-- Card de Destaque Tecnológico (Métricas) -->
+          <div class="tech-metrics-card">
+            <div class="metric-item">
+              <span class="metric-value">10</span>
+              <span class="metric-label">Tabelas Relacionais</span>
+            </div>
+            <div class="metric-divider" aria-hidden="true"></div>
+            <div class="metric-item">
+              <span class="metric-value">4FN</span>
+              <span class="metric-label">Normalização Completa</span>
+            </div>
+            <div class="metric-divider" aria-hidden="true"></div>
+            <div class="metric-item">
+              <span class="metric-value">100%</span>
+              <span class="metric-label">Snake_Case Padrão</span>
+            </div>
+            <div class="metric-divider" aria-hidden="true"></div>
+            <div class="metric-item">
+              <span class="metric-value">15</span>
+              <span class="metric-label">Queries Analíticas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 1: O Desafio & Regras de Negócio (#contexto) -->
+    <section class="section section-contexto" id="contexto">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Engenharia de Negócios</span>
+          <h2 class="section-title">O Desafio & Regras de Negócio</h2>
+          <p class="section-description">
+            Originado do caso de alocação de capital e excedentes de caixa corporativo na B3, CDBs e Tesouro Selic. Uma arquitetura concebida para substituir planilhas opacas por governança transacional rigorosa.
+          </p>
+        </div>
+
+        <div class="grid-cards-4">
+          <!-- Card 1 -->
+          <article class="feature-card">
+            <div class="card-icon-wrapper" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <h3 class="card-title">Regras de Liquidez</h3>
+            <p class="card-text">
+              Suporte flexível a múltiplos prazos de resgate através de enumeração controlada (<span class="code-pill">Diaria</span>, <span class="code-pill">D+1</span>, <span class="code-pill">D+2</span>, <span class="code-pill">D+30</span> e <span class="code-pill">No Vencimento</span>), prevenindo descasamento de fluxo de caixa e resgates extemporâneos.
+            </p>
+            <div class="card-footer-meta">
+              <span class="tag-meta">ativos_financeiros.liquidez</span>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="feature-card">
+            <div class="card-icon-wrapper" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <h3 class="card-title">Acompanhamento de Benchmarks</h3>
+            <p class="card-text">
+              Tabela dinâmica de índices de mercado com apuração diária e acumulada da <span class="code-pill">Taxa Selic</span>, <span class="code-pill">CDI</span>, <span class="code-pill">IPCA</span> e <span class="code-pill">Ibovespa</span>, permitindo comparar alfa e prêmio de risco frente à renda fixa básica.
+            </p>
+            <div class="card-footer-meta">
+              <span class="tag-meta">indices_benchmarks</span>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="feature-card">
+            <div class="card-icon-wrapper" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+            </div>
+            <h3 class="card-title">Tributação e Proventos</h3>
+            <p class="card-text">
+              Segregação estrita entre entradas patrimoniais por proventos passivos (<span class="code-pill">Dividendos</span>, <span class="code-pill">JCP</span>) e deduções operacionais regressivas (<span class="code-pill">IRRF</span> de 22,5% a 15%, IOF e emolumentos da B3).
+            </p>
+            <div class="card-footer-meta">
+              <span class="tag-meta">proventos & custos_tributacao</span>
+            </div>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="feature-card">
+            <div class="card-icon-wrapper" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+            </div>
+            <h3 class="card-title">Consolidação Diária</h3>
+            <p class="card-text">
+              Tabela gerencial de snapshots diários com registro histórico do custo médio ponderado unitário, valor investido, marcação a mercado, lucro/prejuízo acumulado e taxa percentual de rentabilidade real.
+            </p>
+            <div class="card-footer-meta">
+              <span class="tag-meta">posicao_consolidada_diaria</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 2: Arquitetura das 10 Tabelas (#arquitetura) -->
+    <section class="section section-arquitetura" id="arquitetura">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Modelo Entidade-Relacionamento</span>
+          <h2 class="section-title">Arquitetura das 10 Tabelas Relacionais</h2>
+          <p class="section-description">
+            Estrutura modular categorizada em 4 camadas de responsabilidade. Clique em qualquer entidade para inspecionar atributos, tipos e restrições de integridade.
+          </p>
+        </div>
+
+        <!-- Módulos de Tabelas -->
+        <div class="schema-layers-grid">
+          <!-- Camada 1: Domínio / Lookup -->
+          <div class="schema-layer-card">
+            <div class="layer-badge">
+              <span class="layer-pill">Módulo 1</span>
+              <span class="layer-name">Tabelas de Domínio & Lookup</span>
+            </div>
+            <div class="tables-subgrid">
+              <div class="table-entity-card" data-table="instituicoes_financeiras">
+                <div class="entity-header">
+                  <span class="entity-type-badge">Lookup</span>
+                  <h4 class="entity-name">instituicoes_financeiras</h4>
+                </div>
+                <p class="entity-desc">Cadastro de bancos emissores de CDBs, corretoras de custódia e distribuidoras.</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_instituicao</span>
+                  <span class="key-tag unique">UNIQUE: cnpj</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela instituicoes_financeiras">Inspecionar Campos &rarr;</button>
+              </div>
+
+              <div class="table-entity-card" data-table="tipos_ativos">
+                <div class="entity-header">
+                  <span class="entity-type-badge">Lookup</span>
+                  <h4 class="entity-name">tipos_ativos</h4>
+                </div>
+                <p class="entity-desc">Taxonomia dos títulos (Ação Ordinária, Preferencial, CDB Pós, Tesouro Selic, FII).</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_tipo_ativo</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela tipos_ativos">Inspecionar Campos &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Camada 2: Core do Modelo -->
+          <div class="schema-layer-card">
+            <div class="layer-badge">
+              <span class="layer-pill core">Módulo 2</span>
+              <span class="layer-name">Core do Modelo Relacional</span>
+            </div>
+            <div class="tables-subgrid">
+              <div class="table-entity-card" data-table="carteiras_investimento">
+                <div class="entity-header">
+                  <span class="entity-type-badge core">Core</span>
+                  <h4 class="entity-name">carteiras_investimento</h4>
+                </div>
+                <p class="entity-desc">Divisão dos fundos da empresa por objetivos estratégicos (Emergência, Aposentadoria, Oportunidade).</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_carteira</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela carteiras_investimento">Inspecionar Campos &rarr;</button>
+              </div>
+
+              <div class="table-entity-card" data-table="ativos_financeiros">
+                <div class="entity-header">
+                  <span class="entity-type-badge core">Core</span>
+                  <h4 class="entity-name">ativos_financeiros</h4>
+                </div>
+                <p class="entity-desc">Registro pormenorizado dos títulos (ticker B3, emissor, indexador de taxa e liquidez).</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_ativo_financeiro</span>
+                  <span class="key-tag fk">FK: id_tipo_ativo, id_instituicao</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela ativos_financeiros">Inspecionar Campos &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Camada 3: Operacional -->
+          <div class="schema-layer-card">
+            <div class="layer-badge">
+              <span class="layer-pill op">Módulo 3</span>
+              <span class="layer-name">Camada Operacional & Eventos</span>
+            </div>
+            <div class="tables-subgrid tables-subgrid-3">
+              <div class="table-entity-card" data-table="transacoes_investimento">
+                <div class="entity-header">
+                  <span class="entity-type-badge op">Operacional</span>
+                  <h4 class="entity-name">transacoes_investimento</h4>
+                </div>
+                <p class="entity-desc">Log imutável de compras, vendas, aportes e resgates operados no mercado.</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_transacao</span>
+                  <span class="key-tag fk">FK: id_carteira, id_ativo, id_corretora</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela transacoes_investimento">Inspecionar Campos &rarr;</button>
+              </div>
+
+              <div class="table-entity-card" data-table="proventos_recebidos">
+                <div class="entity-header">
+                  <span class="entity-type-badge op">Operacional</span>
+                  <h4 class="entity-name">proventos_recebidos</h4>
+                </div>
+                <p class="entity-desc">Registro de fluxos de renda passiva (Dividendos, JCP, Rendimentos) com retenção de IR.</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_provento</span>
+                  <span class="key-tag fk">FK: id_carteira, id_ativo</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela proventos_recebidos">Inspecionar Campos &rarr;</button>
+              </div>
+
+              <div class="table-entity-card" data-table="custos_tributacao">
+                <div class="entity-header">
+                  <span class="entity-type-badge op">Operacional</span>
+                  <h4 class="entity-name">custos_tributacao</h4>
+                </div>
+                <p class="entity-desc">Despesas acessórias vinculadas a transações (corretagem, emolumentos B3, IRRF, IOF).</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_custo</span>
+                  <span class="key-tag fk">FK: id_transacao</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela custos_tributacao">Inspecionar Campos &rarr;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Camada 4: Mercado e Gerencial -->
+          <div class="schema-layer-card">
+            <div class="layer-badge">
+              <span class="layer-pill mkt">Módulo 4</span>
+              <span class="layer-name">Mercado, Histórico & Gerencial</span>
+            </div>
+            <div class="tables-subgrid tables-subgrid-3">
+              <div class="table-entity-card" data-table="historico_cotacoes_taxas">
+                <div class="entity-header">
+                  <span class="entity-type-badge mkt">Mercado</span>
+                  <h4 class="entity-name">historico_cotacoes_taxas</h4>
+                </div>
+                <p class="entity-desc">Série temporal diária de preços de abertura, fechamento e taxas contratadas.</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_historico</span>
+                  <span class="key-tag fk">FK: id_ativo_financeiro</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela historico_cotacoes_taxas">Inspecionar Campos &rarr;</button>
+              </div>
+
+              <div class="table-entity-card" data-table="indices_benchmarks">
+                <div class="entity-header">
+                  <span class="entity-type-badge mkt">Mercado</span>
+                  <h4 class="entity-name">indices_benchmarks</h4>
+                </div>
+                <p class="entity-desc">Série histórica de indexadores de referência da economia (Selic, CDI, IPCA, Ibovespa).</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_indice</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela indices_benchmarks">Inspecionar Campos &rarr;</button>
+              </div>
+
+              <div class="table-entity-card" data-table="posicao_consolidada_diaria">
+                <div class="entity-header">
+                  <span class="entity-type-badge mkt">Gerencial</span>
+                  <h4 class="entity-name">posicao_consolidada_diaria</h4>
+                </div>
+                <p class="entity-desc">Fotografia diária com saldo de cotas, preço médio ponderado, marcação a mercado e ROI.</p>
+                <div class="entity-keys">
+                  <span class="key-tag pk">PK: id_posicao</span>
+                  <span class="key-tag fk">FK: id_carteira, id_ativo</span>
+                </div>
+                <button class="btn-inspect" type="button" aria-label="Inspecionar tabela posicao_consolidada_diaria">Inspecionar Campos &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel Dinâmico de Detalhes da Tabela (Drawer/Modal) -->
+        <div class="schema-inspector-panel" id="schema-inspector" aria-live="polite">
+          <div class="inspector-header">
+            <div class="inspector-title-area">
+              <span class="inspector-tag">Detalhes da Tabela</span>
+              <h3 class="inspector-title" id="inspector-table-name">Selecione uma tabela acima</h3>
+            </div>
+            <button class="btn-close-inspector" id="btn-close-inspector" type="button" aria-label="Fechar painel de inspeção">&times;</button>
+          </div>
+          <div class="inspector-body" id="inspector-content">
+            <p class="inspector-placeholder">Clique no botão "Inspecionar Campos" em qualquer uma das 10 tabelas acima para visualizar as colunas, tipos de dados MySQL, chaves PK/FK e integridade referencial.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 3: Validação das Formas Normais (#normalizacao) -->
+    <section class="section section-normalizacao" id="normalizacao">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Rigor Teórico & Engenharia Relacional</span>
+          <h2 class="section-title">Validação das Formas Normais (1FN a 4FN)</h2>
+          <p class="section-description">
+            Cada forma normal foi comprovada e validada matematicamente no modelo para expurgar anomalias de inserção, alteração e exclusão, garantindo consistência relacional total.
+          </p>
+        </div>
+
+        <div class="normalization-grid">
+          <!-- 1FN -->
+          <article class="fn-card">
+            <div class="fn-header">
+              <span class="fn-pill">1FN</span>
+              <h3 class="fn-title">1ª Forma Normal (Atomicidade dos Campos)</h3>
+            </div>
+            <div class="fn-body">
+              <p class="fn-summary">
+                <strong>Critério:</strong> Todos os atributos contêm apenas valores atômicos (indivisíveis), sem repetição de grupos ou listas concatenadas em uma única coluna.
+              </p>
+              <div class="fn-case-box">
+                <div class="case-label">Aplicação Prática no FinData:</div>
+                <p class="case-desc">
+                  Na tabela <span class="code-pill">ativos_financeiros</span>, a coluna <span class="code-pill">liquidez</span> armazena estritamente um único valor por registro através do tipo controlado <span class="code-pill">ENUM('Diaria', 'No Vencimento', 'D+1', 'D+30')</span>, nunca uma lista como <span class="code-bad">"D+1, D+2"</span>. Todas as 10 entidades contêm chaves primárias numéricas inequívocas garantindo a unicidade de cada tupla.
+                </p>
+              </div>
+              <div class="fn-status-tag success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Validado &bullet; 100% Atômico</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2FN -->
+          <article class="fn-card">
+            <div class="fn-header">
+              <span class="fn-pill">2FN</span>
+              <h3 class="fn-title">2ª Forma Normal (Dependência Funcional Total)</h3>
+            </div>
+            <div class="fn-body">
+              <p class="fn-summary">
+                <strong>Critério:</strong> Estando na 1FN, nenhum atributo não-chave depende de apenas uma parte de uma chave primária composta (eliminação de dependências parciais).
+              </p>
+              <div class="fn-case-box">
+                <div class="case-label">Aplicação Prática no FinData:</div>
+                <p class="case-desc">
+                  Na tabela <span class="code-pill">posicao_consolidada_diaria</span>, a identificação lógica do saldo requer a tríade conjunta <span class="code-pill">(id_carteira, id_ativo_financeiro, data_posicao)</span>. Colunas métricas como <span class="code-pill">quantidade_saldo</span> e <span class="code-pill">valor_mercado_total</span> dependem da totalidade desses três fatores simultaneamente para existir, sem qualquer dependência fracionada.
+                </p>
+              </div>
+              <div class="fn-status-tag success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Validado &bullet; Sem Dependência Parcial</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3FN -->
+          <article class="fn-card">
+            <div class="fn-header">
+              <span class="fn-pill">3FN</span>
+              <h3 class="fn-title">3ª Forma Normal (Eliminação de Dependências Transitivas)</h3>
+            </div>
+            <div class="fn-body">
+              <p class="fn-summary">
+                <strong>Critério:</strong> Estando na 2FN, nenhum atributo não-chave depende transitivamente de outro atributo não-chave (X &rarr; Y &rarr; Z).
+              </p>
+              <div class="fn-case-box">
+                <div class="case-label">Aplicação Prática no FinData:</div>
+                <p class="case-desc">
+                  A tabela operacional <span class="code-pill">transacoes_investimento</span> não armazena <span class="code-bad">nome_corretora</span> ou <span class="code-bad">cnpj_corretora</span>. Ela referencia unicamente <span class="code-pill">id_corretora</span>. A razão social e o CNPJ dependem estritamente do identificador próprio na tabela <span class="code-pill">instituicoes_financeiras</span>, impedindo anomalias de atualização em massa se a corretora alterar a denominação.
+                </p>
+              </div>
+              <div class="fn-status-tag success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Validado &bullet; Sem Trânsito Indireto</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4FN -->
+          <article class="fn-card">
+            <div class="fn-header">
+              <span class="fn-pill">4FN</span>
+              <h3 class="fn-title">4ª Forma Normal (Eliminação de Dependência Multivalorada)</h3>
+            </div>
+            <div class="fn-body">
+              <p class="fn-summary">
+                <strong>Critério:</strong> Estando na 3FN (ou BCNF), a relação não contém duas ou mais dependências multivaloradas independentes dentro da mesma tabela (X &twoheadrightarrow; Y e X &twoheadrightarrow; Z).
+              </p>
+              <div class="fn-case-box">
+                <div class="case-label">Aplicação Prática no FinData:</div>
+                <p class="case-desc">
+                  A tabela <span class="code-pill">carteiras_investimento</span> armazena exclusivamente atributos atrelados diretamente ao ciclo de vida da carteira (<span class="code-pill">nome</span>, <span class="code-pill">objetivo</span>, <span class="code-pill">data_criacao</span>). Qualquer associação independente entre múltiplos gestores e múltiplos limites de compliance seria isolada em tabelas associativas pontuais, prevenindo duplicações cartesianas de linhas.
+                </p>
+              </div>
+              <div class="fn-status-tag success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Validado &bullet; Isento de MVD Cartesiana</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 4: Playground de Queries SQL (#queries) -->
+    <section class="section section-queries" id="queries">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Playground & Análise de Dados</span>
+          <h2 class="section-title">Playground de Queries SQL</h2>
+          <p class="section-description">
+            Explore 15 consultas corporativas homologadas para auditoria, rentabilidade e contabilidade gerencial. Alterne entre as abas e execute a simulação do resultado em tempo real.
+          </p>
+        </div>
+
+        <!-- Contêiner do Playground -->
+        <div class="queries-playground">
+          <!-- Abas de Navegação das Consultas -->
+          <div class="query-tabs-nav" role="tablist" aria-label="Consultas SQL Disponíveis">
+            <button class="query-tab-btn active" role="tab" id="tab-1" aria-selected="true" aria-controls="query-panel" data-query-id="1">
+              <span class="tab-number">01</span>
+              <span class="tab-title">Patrimônio por Carteira (GROUP BY + SUM)</span>
+            </button>
+            <button class="query-tab-btn" role="tab" id="tab-2" aria-selected="false" aria-controls="query-panel" data-query-id="2">
+              <span class="tab-number">02</span>
+              <span class="tab-title">Proventos Líquidos (JOIN + BETWEEN)</span>
+            </button>
+            <button class="query-tab-btn" role="tab" id="tab-3" aria-selected="false" aria-controls="query-panel" data-query-id="3">
+              <span class="tab-number">03</span>
+              <span class="tab-title">Filtro de Lucro > R$ 200 (HAVING)</span>
+            </button>
+            <button class="query-tab-btn" role="tab" id="tab-4" aria-selected="false" aria-controls="query-panel" data-query-id="4">
+              <span class="tab-number">04</span>
+              <span class="tab-title">Alfa vs Benchmark Selic (Subquery)</span>
+            </button>
+            <button class="query-tab-btn" role="tab" id="tab-5" aria-selected="false" aria-controls="query-panel" data-query-id="5">
+              <span class="tab-number">05</span>
+              <span class="tab-title">Auditoria Tributária IRRF (Join Triplo)</span>
+            </button>
+          </div>
+
+          <!-- Seletor Auxiliar para Todas as 15 Queries -->
+          <div class="query-catalog-bar">
+            <label for="all-queries-select" class="catalog-label">Catálogo Completo das 15 Queries:</label>
+            <select id="all-queries-select" class="catalog-select" aria-label="Selecione uma das 15 queries do catálogo">
+              <option value="1">Query 01 &bull; Patrimônio Total por Carteira (GROUP BY + SUM)</option>
+              <option value="2">Query 02 &bull; Relatório de Proventos Líquidos com Retenção (JOIN + BETWEEN)</option>
+              <option value="3">Query 03 &bull; Carteiras com Lucro > R$ 200,00 (HAVING Filter)</option>
+              <option value="4">Query 04 &bull; Comparativo de Alfa frente ao Benchmark Selic Anual</option>
+              <option value="5">Query 05 &bull; Auditoria de Custos Tributários e Deduções Operacionais</option>
+              <option value="6">Query 06 &bull; Exposição Percentual por Classe de Ativo (Ações vs Renda Fixa)</option>
+              <option value="7">Query 07 &bull; Análise de Risco por Instituição Emissora (CDBs)</option>
+              <option value="8">Query 08 &bull; Cronograma de Vencimento de Títulos para Gestão de Caixa</option>
+              <option value="9">Query 09 &bull; Preço Médio Ponderado vs Cotação Atual na B3</option>
+              <option value="10">Query 10 &bull; Fluxo Mensal de Dividendos Creditados por Carteira</option>
+              <option value="11">Query 11 &bull; Ranking dos Ativos Mais Negociados por Volume Financeiro</option>
+              <option value="12">Query 12 &bull; Transações com Incidência de Alíquota Regressiva de IRRF</option>
+              <option value="13">Query 13 &bull; Rentabilidade Diária Acumulada da Reserva de Emergência</option>
+              <option value="14">Query 14 &bull; Balanço Consolidado de Custos da B3 vs Lucro Líquido</option>
+              <option value="15">Query 15 &bull; Posição de Títulos com Liquidez Imediata (D+0 / D+1)</option>
+            </select>
+          </div>
+
+          <!-- Bloco IDE / Terminal da Query Ativa -->
+          <div class="terminal-ide" id="query-panel" role="tabpanel" aria-labelledby="tab-1">
+            <div class="terminal-topbar">
+              <div class="terminal-dots" aria-hidden="true">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <div class="terminal-dialect">
+                <svg class="dialect-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="4 17 10 11 4 5"></polyline>
+                  <line x1="12" y1="19" x2="20" y2="19"></line>
+                </svg>
+                <span class="dialect-text" id="query-filename">query_01_patrimonio_carteiras.sql</span>
+              </div>
+              <div class="terminal-actions">
+                <button class="btn-terminal btn-copy-sql" id="btn-copy-sql" type="button" aria-label="Copiar código SQL">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span class="copy-text">Copiar SQL</span>
+                </button>
+                <button class="btn-terminal btn-run-query" id="btn-run-query" type="button" aria-label="Simular execução da consulta SQL">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Executar</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Descrição Contextual da Query -->
+            <div class="query-context-header">
+              <h4 class="query-headline" id="query-headline">Agrupamento de Patrimônio Total por Carteira</h4>
+              <p class="query-purpose" id="query-purpose">
+                Consolida a totalização monetária aplicada e a valoração a mercado de cada carteira estratégica na data do fechamento, computando o lucro acumulado absoluto em reais.
+              </p>
+            </div>
+
+            <!-- Código SQL com Estilização Sintática JetBrains Mono -->
+            <div class="terminal-editor">
+              <pre class="sql-code-block" tabindex="0"><code class="language-sql" id="sql-display-code"><span class="sql-kw">SELECT</span> 
+    c.id_carteira,
+    c.nome_carteira,
+    <span class="sql-fn">COUNT</span>(p.id_ativo_financeiro) <span class="sql-kw">AS</span> total_ativos,
+    <span class="sql-fn">SUM</span>(p.valor_investido_total) <span class="sql-kw">AS</span> total_investido,
+    <span class="sql-fn">SUM</span>(p.valor_mercado_total)   <span class="sql-kw">AS</span> total_patrimonio,
+    <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span>(p.lucro_prejuizo_acumulado), <span class="sql-num">2</span>) <span class="sql-kw">AS</span> lucro_acumulado_reais
+<span class="sql-kw">FROM</span> carteiras_investimento c
+<span class="sql-kw">INNER JOIN</span> posicao_consolidada_diaria p 
+    <span class="sql-kw">ON</span> c.id_carteira = p.id_carteira
+<span class="sql-kw">WHERE</span> p.data_posicao = <span class="sql-str">'2026-10-15'</span>
+<span class="sql-kw">GROUP BY</span> c.id_carteira, c.nome_carteira
+<span class="sql-kw">ORDER BY</span> total_patrimonio <span class="sql-kw">DESC</span>;</code></pre>
+            </div>
+
+            <!-- Resultado Tabular Simulado (Execution Output) -->
+            <div class="terminal-output-area">
+              <div class="output-header">
+                <span class="output-title">Resultado da Execução (MySQL Server 8.0.46)</span>
+                <span class="output-time" id="execution-time">Tempo de resposta: 14.2ms &bull; 3 linhas retornadas</span>
+              </div>
+              <div class="output-table-container" id="query-result-table">
+                <table class="sql-result-table">
+                  <thead>
+                    <tr>
+                      <th>id_carteira</th>
+                      <th>nome_carteira</th>
+                      <th>total_ativos</th>
+                      <th>total_investido (R$)</th>
+                      <th>total_patrimonio (R$)</th>
+                      <th>lucro_acumulado (R$)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Reserva de Emergência</td>
+                      <td>1</td>
+                      <td>145.000,00</td>
+                      <td>148.500,00</td>
+                      <td class="text-tertiary">+3.500,00</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Aposentadoria</td>
+                      <td>2</td>
+                      <td>6.985,00</td>
+                      <td>7.290,00</td>
+                      <td class="text-tertiary">+305,00</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>Geração de Renda</td>
+                      <td>1</td>
+                      <td>5.115,00</td>
+                      <td>5.255,00</td>
+                      <td class="text-tertiary">+140,00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Formulário de Contato / Dicionário de Dados (#documentacao) -->
+    <section class="section section-documentacao" id="documentacao">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Documentação Oficial & Suporte</span>
+          <h2 class="section-title">Dicionário de Dados & Contato Técnico</h2>
+          <p class="section-description">
+            Transfira a documentação técnica oficial com especificação de todas as chaves e tipos, ou envie dúvidas à equipa de engenharia de dados.
+          </p>
+        </div>
+
+        <div class="docs-contact-layout">
+          <!-- Card de Download do Dicionário de Dados -->
+          <article class="doc-download-card">
+            <div class="doc-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <h3 class="doc-card-title">Dicionário de Dados Completo</h3>
+            <p class="doc-card-text">
+              Guia oficial em PDF detalhando os 10 esquemas, relacionamentos, chaves primárias autoincrementais, chaves estrangeiras com ações <span class="code-pill">ON DELETE CASCADE</span>, restrições <span class="code-pill">UNIQUE</span> e regras de nulidade.
+            </p>
+            <ul class="doc-features-list">
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Mapeamento de 10 Tabelas com Tipagem MySQL 8.0</span>
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Justificativa de Formas Normais (1FN até 4FN)</span>
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Arquivo original verificado no repositório</span>
+              </li>
+            </ul>
+
+            <div class="doc-download-actions">
+              <a href="basemento/Dicionário%20de%20Dados%20-%20Gestão%20de%20Ativos%20.pdf" download="Dicionario_de_Dados_FinData_MySQL.pdf" class="btn btn-primary btn-block" id="btn-download-pdf">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Descarregar Dicionário de Dados (PDF)</span>
+              </a>
+              <a href="basemento/contexto.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-block">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                <span>Ver Contexto de Negócio & Desafios</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Formulário para Dúvidas Técnicas -->
+          <article class="contact-form-card">
+            <h3 class="contact-form-title">Dúvidas Técnicas sobre a Modelagem?</h3>
+            <p class="contact-form-desc">
+              Envie considerações sobre indexação, cardinalidade, gatilhos de integridade ou consultas SQL.
+            </p>
+
+            <form class="technical-form" id="tech-contact-form" novalidate>
+              <div class="form-group">
+                <label for="user-name" class="form-label">Nome Completo *</label>
+                <input type="text" id="user-name" name="nome" class="form-control" placeholder="Ex: Lucas Ferreira" required autocomplete="name">
+                <span class="form-error-msg" id="name-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="user-email" class="form-label">E-mail Profissional *</label>
+                <input type="email" id="user-email" name="email" class="form-control" placeholder="lucas@empresa.com.br" required autocomplete="email">
+                <span class="form-error-msg" id="email-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="topic-subject" class="form-label">Tópico de Arquitetura *</label>
+                <select id="topic-subject" name="assunto" class="form-control" required>
+                  <option value="" disabled selected>Selecione um tópico técnico</option>
+                  <option value="normalizacao">Validação e Teoria das Formas Normais (1FN a 4FN)</option>
+                  <option value="schema">Integridade das 10 Tabelas e Foreign Keys</option>
+                  <option value="queries">Otimização de Índices e Queries Analíticas</option>
+                  <option value="tributacao">Regras de Cálculo de IRRF, IOF e Emolumentos</option>
+                  <option value="outro">Outras Questões de Modelagem</option>
+                </select>
+                <span class="form-error-msg" id="topic-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="user-message" class="form-label">Mensagem Técnica *</label>
+                <textarea id="user-message" name="mensagem" class="form-control textarea-control" rows="4" placeholder="Descreva sua questão sobre as regras relacionais ou o schema..." required></textarea>
+                <span class="form-error-msg" id="message-error" aria-live="polite"></span>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block" id="btn-submit-form">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                <span>Enviar Consulta Técnica</span>
+              </button>
+
+              <!-- Mensagem de Feedback Visual em Verde (#10B981) -->
+              <div class="form-feedback-message" id="form-feedback" role="alert" aria-live="assertive">
+                <svg class="feedback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span id="feedback-text">Mensagem técnica enviada com sucesso! Nossa equipe de engenharia retornará em breve.</span>
+              </div>
+            </form>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé (Footer) -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-top-grid">
+        <div class="footer-brand-col">
+          <div class="brand-logo footer-logo">
+            <div class="logo-icon-box" aria-hidden="true">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+              </svg>
+            </div>
+            <span class="logo-text">FinData<span class="logo-extension">.sql</span></span>
+          </div>
+          <p class="footer-tagline">
+            Arquitetura e modelagem relacional de alta performance para consolidação patrimonial, benchmarks econômicos e inteligência de investimentos corporativos.
+          </p>
+          <div class="footer-tech-stack">
+            <span class="tech-tag">MySQL 8.0</span>
+            <span class="tech-tag">InnoDB ACID</span>
+            <span class="tech-tag">Normalização 4FN</span>
+            <span class="tech-tag">Snake_Case</span>
+          </div>
+        </div>
+
+        <div class="footer-links-col">
+          <h4 class="footer-heading">Navegação Rápida</h4>
+          <ul class="footer-links">
+            <li><a href="#contexto">Visão Geral & Regras</a></li>
+            <li><a href="#arquitetura">Schema das 10 Tabelas</a></li>
+            <li><a href="#normalizacao">Validação 1FN a 4FN</a></li>
+            <li><a href="#queries">Playground de Queries</a></li>
+            <li><a href="#documentacao">Dicionário de Dados</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4 class="footer-heading">Artefatos & Código</h4>
+          <ul class="footer-links">
+            <li><a href="https://github.com/GuilhermeFontanag/sistema_ativos" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); font-weight: 600;">Repositório GitHub (Arquivos SQL) &nearr;</a></li>
+            <li><a href="#queries">15 Consultas SQL Homologadas</a></li>
+            <li><a href="basemento/Dicionário%20de%20Dados%20-%20Gestão%20de%20Ativos%20.pdf" download>PDF Dicionário de Dados</a></li>
+            <li><a href="basemento/FormaNormal" target="_blank" rel="noopener noreferrer">Memorial Teórico 4FN</a></li>
+            <li><a href="basemento/contexto.pdf" target="_blank" rel="noopener noreferrer">Estudo de Caso Vita Brevis</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4 class="footer-heading">Diretrizes de Qualidade</h4>
+          <p class="footer-text-small">
+            Integridade referencial estrita com chaves compostas indexadas, eliminação completa de dependências anômalas e conformidade com os princípios ACID.
+          </p>
+          <div class="compliance-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>Relational Integrity Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <p class="copyright-text">
+          &copy; 2026 FinData Architecture. Todos os direitos reservados. Projeto Acadêmico & Profissional de Gestão de Ativos Financeiros.
+        </p>
+        <div class="footer-bottom-badges">
+          <a href="https://github.com/GuilhermeFontanag/sistema_ativos" target="_blank" rel="noopener noreferrer" class="footer-github-link">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+            <span>GitHub: GuilhermeFontanag/sistema_ativos</span>
+          </a>
+          <span class="status-indicator-dot"></span>
+          <span>MySQL 8.0.46 &bull; Normalização Relacional Validada</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal Interativo do DDL Completo -->
+  <div class="modal-backdrop" id="ddl-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ddl-modal-title">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <span class="badge-mini">Schema Completo</span>
+          <h3 class="modal-title" id="ddl-modal-title">DDL MySQL 8.0 &bull; Gerenciador de Ativos</h3>
+        </div>
+        <button class="btn-close-modal" id="btn-close-modal" type="button" aria-label="Fechar janela DDL">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-intro">
+          Estrutura DDL consolidada das 10 tabelas relacionais do projeto, com declaração de tipos, Foreign Keys e constraints:
+        </p>
+        <div class="terminal-ide modal-terminal">
+          <div class="terminal-topbar">
+            <div class="terminal-dots" aria-hidden="true">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <span class="dialect-text">gerenciador_ativos_ddl_full.sql</span>
+            <button class="btn-terminal" id="btn-copy-ddl" type="button">
+              <span class="copy-text">Copiar DDL</span>
+            </button>
+          </div>
+          <pre class="sql-code-block modal-code"><code class="language-sql" id="ddl-code-content">-- ========================================================
+-- PROJETO: Gestão de Ativos Financeiros (FinData Architecture)
+-- DIALETO: MySQL 8.0.46 LTS | ENGINE: InnoDB | CHARSET: utf8mb4
+-- ========================================================
+
+CREATE DATABASE IF NOT EXISTS `gerenciador_ativos`
+  DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `gerenciador_ativos`;
+
+-- 1. INSTITUICOES FINANCEIRAS
+CREATE TABLE `instituicoes_financeiras` (
+  `id_instituicao` INT NOT NULL AUTO_INCREMENT,
+  `nome_instituicao` VARCHAR(100) NOT NULL,
+  `cnpj` VARCHAR(14) NOT NULL UNIQUE,
+  `tipo_instituicao` ENUM('Banco Emissor','Corretora','Distribuidora') NOT NULL,
+  `codigo_compe` VARCHAR(5) DEFAULT NULL,
+  PRIMARY KEY (`id_instituicao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2. TIPOS DE ATIVOS
+CREATE TABLE `tipos_ativos` (
+  `id_tipo_ativo` INT NOT NULL AUTO_INCREMENT,
+  `nome_tipo` VARCHAR(50) NOT NULL,
+  `classe_ativo` ENUM('Renda Fixa','Renda Variavel','Fundo de Investimento') NOT NULL,
+  `descricao` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id_tipo_ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 3. CARTEIRAS DE INVESTIMENTO
+CREATE TABLE `carteiras_investimento` (
+  `id_carteira` INT NOT NULL AUTO_INCREMENT,
+  `nome_carteira` VARCHAR(100) NOT NULL,
+  `objetivo` VARCHAR(255) DEFAULT NULL,
+  `data_criacao` DATE NOT NULL,
+  PRIMARY KEY (`id_carteira`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 4. ATIVOS FINANCEIROS
+CREATE TABLE `ativos_financeiros` (
+  `id_ativo_financeiro` INT NOT NULL AUTO_INCREMENT,
+  `id_tipo_ativo` INT NOT NULL,
+  `id_instituicao_emissora` INT NOT NULL,
+  `ticker_codigo` VARCHAR(30) NOT NULL,
+  `nome_ativo` VARCHAR(150) NOT NULL,
+  `indexador_taxa` VARCHAR(50) DEFAULT NULL,
+  `data_emissao` DATE DEFAULT NULL,
+  `data_vencimento` DATE DEFAULT NULL,
+  `liquidez` ENUM('Diaria','No Vencimento','D+1','D+30') NOT NULL,
+  PRIMARY KEY (`id_ativo_financeiro`),
+  KEY `fk_ativos_tipo` (`id_tipo_ativo`),
+  KEY `fk_ativos_emissora` (`id_instituicao_emissora`),
+  KEY `idx_ativos_ticker` (`ticker_codigo`),
+  CONSTRAINT `fk_ativos_emissora` FOREIGN KEY (`id_instituicao_emissora`) REFERENCES `instituicoes_financeiras` (`id_instituicao`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ativos_tipo` FOREIGN KEY (`id_tipo_ativo`) REFERENCES `tipos_ativos` (`id_tipo_ativo`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 5. TRANSACOES DE INVESTIMENTO
+CREATE TABLE `transacoes_investimento` (
+  `id_transacao` INT NOT NULL AUTO_INCREMENT,
+  `id_carteira` INT NOT NULL,
+  `id_ativo_financeiro` INT NOT NULL,
+  `id_corretora` INT NOT NULL,
+  `tipo_operacao` ENUM('Compra','Venda','Aporte','Resgate') NOT NULL,
+  `data_transacao` DATE NOT NULL,
+  `quantidade` DECIMAL(15,4) NOT NULL,
+  `preco_unitario` DECIMAL(15,4) NOT NULL,
+  `valor_total_bruto` DECIMAL(15,2) NOT NULL,
+  PRIMARY KEY (`id_transacao`),
+  KEY `fk_transacoes_carteira` (`id_carteira`),
+  KEY `fk_transacoes_ativo` (`id_ativo_financeiro`),
+  KEY `fk_transacoes_corretora` (`id_corretora`),
+  CONSTRAINT `fk_transacoes_ativo` FOREIGN KEY (`id_ativo_financeiro`) REFERENCES `ativos_financeiros` (`id_ativo_financeiro`) ON DELETE CASCADE,
+  CONSTRAINT `fk_transacoes_carteira` FOREIGN KEY (`id_carteira`) REFERENCES `carteiras_investimento` (`id_carteira`) ON DELETE CASCADE,
+  CONSTRAINT `fk_transacoes_corretora` FOREIGN KEY (`id_corretora`) REFERENCES `instituicoes_financeiras` (`id_instituicao`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6. PROVENTOS RECEBIDOS
+CREATE TABLE `proventos_recebidos` (
+  `id_provento` INT NOT NULL AUTO_INCREMENT,
+  `id_carteira` INT NOT NULL,
+  `id_ativo_financeiro` INT NOT NULL,
+  `tipo_provento` ENUM('Dividendo','JCP','Rendimento','Amortizacao') NOT NULL,
+  `data_com` DATE NOT NULL,
+  `data_pagamento` DATE NOT NULL,
+  `valor_bruto_recebido` DECIMAL(15,2) NOT NULL,
+  `imposto_renda_retido` DECIMAL(15,2) NOT NULL,
+  `valor_liquido_creditado` DECIMAL(15,2) NOT NULL,
+  PRIMARY KEY (`id_provento`),
+  KEY `fk_proventos_carteira` (`id_carteira`),
+  KEY `fk_proventos_ativo` (`id_ativo_financeiro`),
+  CONSTRAINT `fk_proventos_ativo` FOREIGN KEY (`id_ativo_financeiro`) REFERENCES `ativos_financeiros` (`id_ativo_financeiro`) ON DELETE CASCADE,
+  CONSTRAINT `fk_proventos_carteira` FOREIGN KEY (`id_carteira`) REFERENCES `carteiras_investimento` (`id_carteira`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 7. CUSTOS E TRIBUTACAO
+CREATE TABLE `custos_tributacao` (
+  `id_custo` INT NOT NULL AUTO_INCREMENT,
+  `id_transacao` INT NOT NULL,
+  `tipo_custo` ENUM('Corretagem','Emolumentos_B3','Taxa_Custodia','IRRF','IOF') NOT NULL,
+  `aliquota_aplicada_pct` DECIMAL(5,2) DEFAULT NULL,
+  `valor_deduzido_reais` DECIMAL(15,2) NOT NULL,
+  `data_cobranca` DATE NOT NULL,
+  PRIMARY KEY (`id_custo`),
+  KEY `fk_custos_transacao` (`id_transacao`),
+  CONSTRAINT `fk_custos_transacao` FOREIGN KEY (`id_transacao`) REFERENCES `transacoes_investimento` (`id_transacao`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 8. HISTORICO DE COTACOES E TAXAS
+CREATE TABLE `historico_cotacoes_taxas` (
+  `id_historico` INT NOT NULL AUTO_INCREMENT,
+  `id_ativo_financeiro` INT NOT NULL,
+  `data_referencia` DATE NOT NULL,
+  `preco_abertura` DECIMAL(15,4) DEFAULT NULL,
+  `preco_fechamento` DECIMAL(15,4) NOT NULL,
+  `taxa_anual_pactuada_pct` DECIMAL(8,4) DEFAULT NULL,
+  PRIMARY KEY (`id_historico`),
+  KEY `fk_historico_ativo` (`id_ativo_financeiro`),
+  KEY `idx_historico_ativo_data` (`id_ativo_financeiro`,`data_referencia`),
+  CONSTRAINT `fk_historico_ativo` FOREIGN KEY (`id_ativo_financeiro`) REFERENCES `ativos_financeiros` (`id_ativo_financeiro`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 9. INDICES E BENCHMARKS
+CREATE TABLE `indices_benchmarks` (
+  `id_indice` INT NOT NULL AUTO_INCREMENT,
+  `nome_indice` VARCHAR(50) NOT NULL,
+  `data_apuracao` DATE NOT NULL,
+  `valor_taxa_diaria_pct` DECIMAL(8,4) NOT NULL,
+  `valor_acumulado_ano_pct` DECIMAL(8,4) NOT NULL,
+  PRIMARY KEY (`id_indice`),
+  KEY `idx_indices_nome_data` (`nome_indice`,`data_apuracao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 10. POSICAO CONSOLIDADA DIARIA
+CREATE TABLE `posicao_consolidada_diaria` (
+  `id_posicao` INT NOT NULL AUTO_INCREMENT,
+  `id_carteira` INT NOT NULL,
+  `id_ativo_financeiro` INT NOT NULL,
+  `data_posicao` DATE NOT NULL,
+  `quantidade_saldo` DECIMAL(15,4) NOT NULL,
+  `custo_medio_unitario` DECIMAL(15,4) NOT NULL,
+  `valor_investido_total` DECIMAL(15,2) NOT NULL,
+  `valor_mercado_total` DECIMAL(15,2) NOT NULL,
+  `lucro_prejuizo_acumulado` DECIMAL(15,2) NOT NULL,
+  `rentabilidade_pct_acumulada` DECIMAL(8,4) NOT NULL,
+  PRIMARY KEY (`id_posicao`),
+  KEY `fk_posicao_ativo` (`id_ativo_financeiro`),
+  KEY `idx_posicao_carteira_data` (`id_carteira`,`data_posicao`),
+  CONSTRAINT `fk_posicao_ativo` FOREIGN KEY (`id_ativo_financeiro`) REFERENCES `ativos_financeiros` (`id_ativo_financeiro`) ON DELETE CASCADE,
+  CONSTRAINT `fk_posicao_carteira` FOREIGN KEY (`id_carteira`) REFERENCES `carteiras_investimento` (`id_carteira`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="https://github.com/GuilhermeFontanag/sistema_ativos" class="btn btn-outline btn-sm" target="_blank" rel="noopener noreferrer">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+          <span>Repositório no GitHub</span>
+        </a>
+        <button class="btn btn-primary btn-sm" id="btn-modal-close-action" type="button">Concluído</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
